@@ -1,6 +1,43 @@
 <!doctype html><html lang="fr"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Étape 3 : Règle de l’octave en mineur — 3 derniers degrés</title><style>
 :root{font-family:system-ui,-apple-system,Segoe UI,sans-serif;color:#182337;background:#f4f6fa}*{box-sizing:border-box}body{margin:0;padding:24px 12px}main{max-width:1050px;margin:auto}header{text-align:center;margin-bottom:22px}h1{font-size:clamp(24px,4vw,36px);margin:0 0 8px}p{line-height:1.5}.card{background:white;border-radius:18px;padding:24px;box-shadow:0 8px 30px #14203a12}.score{width:100%;display:block;object-fit:contain;max-height:440px;margin:18px auto 8px}.intro{text-align:center}.instructions{font-size:1.1rem}button{border:0;border-radius:10px;background:#2457bd;color:white;font-size:1rem;font-weight:650;padding:13px 22px;cursor:pointer}button:disabled{opacity:.4;cursor:default}button.secondary{background:#e9eef8;color:#173565}.controls{display:flex;gap:10px;justify-content:center;flex-wrap:wrap;margin:20px 0}.tag{display:inline-block;background:#e9eef8;color:#234b95;border-radius:999px;padding:7px 14px;font-weight:650}.topline{display:flex;justify-content:space-between;gap:8px;align-items:center;flex-wrap:wrap}.keys{display:flex;justify-content:center;gap:8px;margin-top:14px;flex-wrap:wrap}.key{background:#e9eef8;color:#203451}.key.active{background:#2457bd;color:white}.key{min-width:75px}.key:focus-visible{outline:3px solid #f0a43b;outline-offset:3px}.bar{height:9px;border-radius:99px;background:#e8edf5;overflow:hidden;margin:14px 0}.bar>div{height:100%;width:0;background:#3876e8}.hint{font-size:.95rem;color:#657188;text-align:center}.hidden{display:none}.warning{background:#fff5e4;color:#785018;padding:12px 16px;border-radius:10px;margin:12px 0;font-size:.95rem}@media(max-width:550px){.card{padding:14px}.controls button{flex:1}}
-</style></head><body><main><header><h1>Étape 3 : Règle de l’octave en mineur — 3 derniers degrés</h1><p>Quatre tonalités · La, Mi, Si, Ré</p></header><section class="card" id="intro"><div class="intro"><img class="score" src="images/La.png" alt="Règle de l’octave en mineur, étape 3, en La"><p class="instructions">Jouez l’étape 3 de la règle de l’octave en mineur dans les quatre tonalités — <strong>La, Mi, Si et Ré</strong> — en suivant l’accompagnement audio.</p><p class="hint">Les tonalités s’enchaînent automatiquement. Vous pouvez aussi choisir directement une tonalité.</p><button id="start">Démarrer</button></div></section><section class="card hidden" id="exercise"><div class="topline"><span class="tag" id="step">1 / 4</span><span class="tag" id="tonality">La mineur</span></div><div class="keys" id="keys"></div><img id="sheet" class="score" src="images/La.png" alt="Partition"><p class="hint" id="status" role="status">Lecture en cours</p><div class="bar" aria-label="Progression de l’enregistrement"><div id="progress"></div></div><div class="controls"><button id="pause" class="secondary">Pause</button><button id="restart" class="secondary">Recommencer</button></div><p class="hint">Passage automatique à la suivante à la fin de l’audio. Vous pouvez aussi cliquer sur La, Mi, Si ou Ré pour choisir directement une tonalité.</p><div id="error" class="warning hidden" role="alert"></div></section><audio id="recording" preload="auto"></audio></main><script>
+
+.menu-row{text-align:left;margin:0 0 14px}.menu-link{display:inline-block;text-decoration:none;color:#2463b7;font-weight:650;padding:8px 12px;border-radius:9px;border:1px solid #dce3e9;background:white}.menu-link:hover,.menu-link:focus-visible{background:#edf3f9;outline:2px solid #8ca9c7;outline-offset:2px}
+
+/* Harmonie pratique — identité visuelle commune */
+:root{--hp-ink:#192c40;--hp-blue:#17344b;--hp-accent:#285c80;--hp-muted:#607286;--hp-border:#dbe5ef;--hp-bg:#f3f6fa}
+html{background:var(--hp-bg);scroll-behavior:smooth}
+body{background:var(--hp-bg)!important;color:var(--hp-ink)!important;box-sizing:border-box;min-height:100vh}
+body *{box-sizing:border-box}
+main,.wrap{max-width:1050px}
+h1{color:var(--hp-ink)!important;letter-spacing:-.025em;line-height:1.2}
+.card{border:1px solid var(--hp-border)!important;border-radius:20px!important;box-shadow:0 8px 28px #18354b0d!important}
+button,.menu-link{transition:background .15s,transform .15s,box-shadow .15s}
+button:not(:disabled):hover{transform:translateY(-1px)}
+button:focus-visible,.menu-link:focus-visible{outline:3px solid #7fb0d1!important;outline-offset:3px}
+button.primary,button:not(.secondary):not(.key):not(#hpFullscreen):not(#hpExitFullscreen){background:var(--hp-blue);color:white;border-color:var(--hp-blue)}
+button.secondary,.menu-link{background:#e9f0f7!important;color:var(--hp-accent)!important;border-color:var(--hp-border)!important}
+.menu-link{font-weight:700;text-decoration:none}
+.chord,#display,.note{color:var(--hp-ink);letter-spacing:-.03em}
+#hpFullscreen{position:fixed;right:20px;top:18px;z-index:1000;background:#e9f0f7;color:var(--hp-blue);border:1px solid var(--hp-border);border-radius:10px;padding:9px 14px;font:600 14px system-ui,sans-serif;cursor:pointer;box-shadow:0 2px 10px #172b4d0d}
+#hpExitFullscreen{display:none;position:fixed;right:20px;top:18px;z-index:1001;background:#e9f0f7;color:var(--hp-blue);border:1px solid var(--hp-border);border-radius:10px;padding:9px 14px;font:600 14px system-ui,sans-serif;cursor:pointer}
+html:fullscreen{overflow:auto;background:var(--hp-bg)}
+html:fullscreen body{max-width:none!important;width:100%;margin:0 auto!important;padding:66px 24px 40px!important;overflow:auto}
+html:fullscreen #hpFullscreen{display:none}
+html:fullscreen #hpExitFullscreen{display:block}
+html:fullscreen .chord,html:fullscreen #display,html:fullscreen .note{font-size:clamp(4rem,12vw,9rem)!important}
+html:fullscreen .card{padding-top:clamp(24px,5vh,70px);padding-bottom:clamp(24px,5vh,70px)}
+html:fullscreen .menu-row{display:none}
+@media(max-width:600px){#hpFullscreen{position:static;display:block;margin:8px 0 8px auto}html:fullscreen body{padding:55px 12px 20px!important}}
+@media(prefers-reduced-motion:reduce){button,.menu-link{transition:none}}
+
+/* Mode immersif compatible avec Safari sur iPhone */
+html.hp-mobile-fullscreen{overflow:hidden!important}
+html.hp-mobile-fullscreen body{position:fixed!important;inset:0!important;box-sizing:border-box!important;width:100%!important;height:100dvh!important;max-width:none!important;margin:0!important;padding:calc(env(safe-area-inset-top) + 60px) 14px calc(env(safe-area-inset-bottom) + 20px)!important;overflow-y:auto!important;background:var(--hp-bg)!important}
+html.hp-mobile-fullscreen #hpFullscreen{display:none!important}
+html.hp-mobile-fullscreen #hpExitFullscreen{display:block!important;position:fixed!important;top:calc(env(safe-area-inset-top) + 12px)!important;right:14px!important}
+html.hp-mobile-fullscreen .menu-row{display:none!important}
+html.hp-mobile-fullscreen .chord,html.hp-mobile-fullscreen #display,html.hp-mobile-fullscreen .note{font-size:clamp(4rem,12vw,9rem)!important}
+</style></head><body><main><div class="menu-row"><a class="menu-link" href="../">← Menu</a></div><header><h1>Étape 3 : Règle de l’octave complète</h1><p>Quatre tonalités · La, Mi, Si, Ré mineur</p></header><section class="card" id="intro"><div class="intro"><img class="score" src="images/La.png" alt="Règle de l’octave en mineur, étape 3, en La"><p class="instructions">Jouez l’étape 3 de la règle de l’octave en mineur dans les quatre tonalités — <strong>La, Mi, Si et Ré</strong> — en suivant l’accompagnement audio.</p><p class="hint">Les tonalités s’enchaînent automatiquement. Vous pouvez aussi choisir directement une tonalité.</p><button id="start">Démarrer</button></div></section><section class="card hidden" id="exercise"><div class="topline"><span class="tag" id="step">1 / 4</span><span class="tag" id="tonality">La mineur</span></div><div class="keys" id="keys"></div><img id="sheet" class="score" src="images/La.png" alt="Partition"><p class="hint" id="status" role="status">Lecture en cours</p><div class="bar" aria-label="Progression de l’enregistrement"><div id="progress"></div></div><div class="controls"><button id="pause" class="secondary">Pause</button><button id="restart" class="secondary">Recommencer</button></div><p class="hint">Passage automatique à la suivante à la fin de l’audio. Vous pouvez aussi cliquer sur La, Mi, Si ou Ré pour choisir directement une tonalité.</p><div id="error" class="warning hidden" role="alert"></div></section><audio id="recording" preload="auto"></audio></main><script>
 const data=[{name:'La',img:'images/La.png',audio:'audio/La.mp3'},{name:'Mi',img:'images/Mi.png',audio:'audio/Mi.mp3'},{name:'Si',img:'images/Si.png',audio:'audio/Si.mp3'},{name:'Ré',img:'images/Re.png',audio:'audio/Re.mp3'}];
 const $=id=>document.getElementById(id),player=$('recording');let idx=0,done=false;
 function render(){const d=data[idx];$('step').textContent=`${idx+1} / 4`;$('tonality').textContent=d.name+' mineur';$('sheet').src=d.img;$('sheet').alt='Règle de l’octave : l’étape 3 de la règle de l’octave en '+d.name;$('keys').innerHTML='';data.forEach((v,i)=>{const badge=document.createElement('button');badge.type='button';badge.className='key'+(i===idx?' active':'');badge.textContent=v.name;badge.setAttribute('aria-label','Jouer en '+v.name);badge.setAttribute('aria-pressed',String(i===idx));badge.addEventListener('click',()=>{if(i===idx&&!done)return;player.pause();idx=i;done=false;playCurrent()});$('keys').append(badge)});$('progress').style.width='0%';$('status').textContent='Lecture : '+d.name;$('pause').textContent='Pause';$('pause').disabled=false;$('error').classList.add('hidden');player.src=d.audio;player.load()}
@@ -12,4 +49,29 @@ player.addEventListener('error',()=>{if(!$('exercise').classList.contains('hidde
 $('pause').addEventListener('click',async()=>{if(done)return;if(player.paused){try{await player.play();$('pause').textContent='Pause';$('status').textContent='Lecture : '+data[idx].name}catch(e){$('error').textContent='Impossible de reprendre la lecture.';$('error').classList.remove('hidden')}}else{player.pause();$('pause').textContent='Reprendre';$('status').textContent='En pause · '+data[idx].name}});
 
 $('restart').addEventListener('click',()=>{player.pause();idx=0;done=false;playCurrent()});
-</script></body></html>
+</script>
+<script>
+/* Commandes d'affichage indépendantes de la logique musicale */
+(()=>{
+ const full=document.createElement('button');full.type='button';full.id='hpFullscreen';full.textContent='⛶ Plein écran';full.setAttribute('aria-label','Passer en plein écran');
+ const exit=document.createElement('button');exit.type='button';exit.id='hpExitFullscreen';exit.textContent='✕ Quitter le plein écran';
+ document.body.append(full,exit);
+ const toggleMobile=on=>{document.documentElement.classList.toggle('hp-mobile-fullscreen',on);};
+ full.addEventListener('click',async()=>{
+  if(document.documentElement.requestFullscreen){try{await document.documentElement.requestFullscreen();return}catch(e){}}
+  toggleMobile(true);
+ });
+ exit.addEventListener('click',()=>{if(document.fullscreenElement)document.exitFullscreen();else toggleMobile(false)});
+ document.addEventListener('fullscreenchange',()=>{if(document.fullscreenElement)toggleMobile(false)});
+ const get=id=>document.getElementById(id);
+ document.addEventListener('keydown',e=>{
+  if(e.altKey||e.ctrlKey||e.metaKey||e.repeat)return;
+  const target=e.target;
+  if(target?.closest?.('input,select,textarea,[contenteditable="true"],button,a'))return;
+  if(e.key==='Enter'){const b=get('start');if(b&&!b.disabled&&!b.hidden&&getComputedStyle(b).display!=='none'){e.preventDefault();b.click()}}
+  if(e.code==='Space'){const b=get('pause');if(b&&!b.disabled&&!b.hidden&&getComputedStyle(b).display!=='none'){e.preventDefault();b.click()}}
+  if(e.key.toLowerCase()==='r'){const b=get('reset')||get('restart');if(b&&!b.disabled){e.preventDefault();b.click()}}
+ });
+})();
+</script>
+</body></html>
